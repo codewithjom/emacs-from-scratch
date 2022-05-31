@@ -1,0 +1,18 @@
+pkgbase = jdos-emacs-git
+	pkgdesc = JDOS emacs-from-scratch configuration.
+	pkgver = 28.1.r1.0fa5ae7
+	pkgrel = 1
+	url = https://github.com/codewithjom/emacs-from-scratch.git
+	arch = x86_64
+	license = GPL3
+	makedepends = git
+	depends = emacs
+	depends = ripgrep
+	depends = ttf-jetbrains-mono
+	depends = ttc-iosevka-aile
+	provides = emacs
+	conflicts = emacs
+	source = git+https://github.com/codewithjom/emacs-from-scratch.git
+	md5sums = SKIP
+
+pkgname = jdos-emacs-git
