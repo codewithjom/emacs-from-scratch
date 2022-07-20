@@ -94,6 +94,7 @@
 (set-fringe-mode 10)        ; Give some breathing room
 (menu-bar-mode -1)          ; Disable the menu bar
 (setq visible-bell t)
+(blink-cursor-mode 1)
 ;; (global-hl-line-mode t)
 
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
@@ -102,14 +103,15 @@
 (setq scroll-step 1) ;; keyboard scroll one line at a time
 (setq use-dialog-box nil) ;; Disable dialog boxes since they weren't working in Mac OSX
 
-(set-frame-parameter (selected-frame) 'alpha '(90 . 85))
-(add-to-list 'default-frame-alist '(alpha . (90 . 85)))
+;; (set-frame-parameter (selected-frame) 'alpha '(95 . 90))
+;; (add-to-list 'default-frame-alist '(alpha . (95 . 90)))
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
-(setq display-line-numbers-type 'relative)
+;; (setq display-line-numbers-type 'relative) ;; set to relative line numbers
+(display-line-numbers-mode) ;; set to default line numbers
 (setq-default truncate-lines t)
 
 ;; Disable line numbers for some modes
@@ -127,21 +129,21 @@
 (setq ad-redefinition-action 'accept)
 
 (use-package doom-themes
-  :init (load-theme 'doom-one t))
+  :init (load-theme 'doom-dracula t))
 
-(defvar jd/default-font-size 120)
-(defvar jd/default-variable-font-size 120)
+(defvar jd/default-font-size 105)
+(defvar jd/default-variable-font-size 105)
 
 (defun jd/set-font-faces ()
   (message "Setting faces!")
   (set-face-attribute 'default nil
-                      :font "JetBrains Mono"
+                      :font "FantasqueSansMono Nerd Font"
                       :height jd/default-font-size
                       :weight 'light)
 
   ;; Set the fixed pitch face
   (set-face-attribute 'fixed-pitch nil
-                      :font "JetBrains Mono"
+                      :font "FantasqueSansMono Nerd Font"
                       :height jd/default-font-size
                       :weight 'light)
 
@@ -149,7 +151,7 @@
   (set-face-attribute 'variable-pitch nil
                       :font "Iosevka Aile"
                       :height jd/default-variable-font-size
-                      :weight 'light))
+                      :weight 'regular))
 
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook
@@ -179,17 +181,33 @@
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom
-  (doom-modeline-height 25)
-  (doom-modeline-bar-width 3)
+  (doom-modeline-height 20)
+  (doom-modeline-bar-width 5)
   (doom-modeline-lsp t)
-  (doom-modeline-github t)
-  (doom-modeline-minor-modes nil)
+  (doom-modeline-github nil)
+  (doom-modeline-minor-modes t)
   (doom-modeline-persp-name nil)
-  (doom-modeline-major-mode-icon t))
+  (doom-modeline-buffer-file-name-style 'truncate-except-project)
+  (doom-modeline-major-mode-icon nil))
 
 ;;(display-battery-mode 1)
 ;;(setq display-time-day-and-date t)
 ;;(display-time-mode 1)
+
+(use-package dashboard
+  :init
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  ;; (setq dashboard-startup-banner 'logo) ;; use emacs logo
+  (setq dashboard-startup-banner "~/.emacs.d/banner/logo.png")
+  (setq dashboard-center-content t)
+  (setq dashboard-items '((recents . 15)))
+
+  :config
+  (dashboard-setup-startup-hook)
+  (dashboard-modify-heading-icons '((recents . "file-text"))))
+
+(setq doom-fallback-buffer-name "*dashboard*")
 
 (use-package super-save
   :defer 1
@@ -368,7 +386,7 @@ folder, otherwise delete a word"
 (add-hook 'after-init-hook 'global-company-mode)
 
 (defun jd/org-mode-visual-fill()
-  (setq visual-fill-column-width 100
+  (setq visual-fill-column-width 110
         visual-fill-column-center-text t)
   (visual-fill-column-mode 1))
 
@@ -475,94 +493,96 @@ folder, otherwise delete a word"
 
 (use-package bookmark-view)
 
-(setq-default fill-column 80)
+(setq-default fill-column 90)
 
 (use-package simple-httpd
-	:ensure t)
+  :ensure t)
 
 (defun jd/org-mode-setup ()
-	(org-indent-mode)
-	(variable-pitch-mode 1)
-	(auto-fill-mode 0)
-	(visual-line-mode 1)
-	(setq evil-auto-indent nil)
-	(diminish org-indent-mode))
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq evil-auto-indent nil)
+  (diminish org-indent-mode))
 
 (use-package org
-	:defer t
-	:hook (org-mode . jd/org-mode-setup)
-	:config
-	(setq org-ellipsis "..."
-				org-hide-emphasis-markers t
-				org-src-fontify-natively t
-				org-fontify-quote-and-verse-blocks nil
-				org-src-tab-acts-natively t
-				org-edit-src-content-indentation 2
-				org-hide-block-startup nil
-				org-src-preserve-indentation nil
-				org-startup-folded 'content
-				org-cycle-separator-lines 2)
+  :defer t
+  :hook (org-mode . jd/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t
+        org-src-fontify-natively t
+        org-fontify-quote-and-verse-blocks t
+        org-src-tab-acts-natively t
+        org-edit-src-content-indentation 2
+        org-hide-block-startup nil
+        org-src-preserve-indentation nil
+        org-startup-folded 'content
+        org-cycle-separator-lines 2)
 
-	(setq org-modules
-				'(org-crypt
-					org-habit
-					org-bookmark
-					org-eshell
-					org-irc))
-	(setq org-refile-targets '((nil :maxlevel . 1)
-														 (org-agenda-files :maxlevel . 1)))
+  (setq org-modules
+        '(org-crypt
+          org-habit
+          org-bookmark
+          org-eshell
+          org-irc))
 
-	(setq org-outline-path-complete-in-steps nil)
-	(setq org-refiles-use-outline-path t)
+  (setq org-refile-targets '((nil :maxlevel . 1)
+                             (org-agenda-files :maxlevel . 1)))
 
-	(evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
-	(evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refiles-use-outline-path t)
 
-	(evil-define-key '(normal insert visual) org-mode-map (kbd "M-j") 'org-metadown)
-	(evil-define-key '(normal insert visual) org-mode-map (kbd "M-k") 'org-metaup)
+  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
+  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
 
-	(org-babel-do-load-languages
-	 'org-babel-load-languages
-	 '((emacs-lisp . t)))
+  (evil-define-key '(normal insert visual) org-mode-map (kbd "M-j") 'org-metadown)
+  (evil-define-key '(normal insert visual) org-mode-map (kbd "M-k") 'org-metaup)
 
-	(push '("conf-unix" . conf-unix) org-src-lang-modes)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)))
 
-	(use-package org-superstar
-		:after org
-		:hook (org-mode . org-superstar-mode)
-		:custom
-		(org-directory "~/Repo/notes")
-		(org-superstar-remove-leading-stars t)
-		;; (org-ellipsis "...")
-		(org-superstar-item-bullet-alist '((?+ . ?✦) (?- . ?)))
-		(org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
-	;; Increase the size of various headings
-	(set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
-	(dolist (face '((org-level-1 . 1.4)
-									(org-level-2 . 1.3)
-									(org-level-3 . 1.2)
-									(org-level-4 . 1.1)
-									(org-level-5 . 1.05)
-									(org-level-6 . 1.05)
-									(org-level-7 . 1.05)
-									(org-level-8 . 1.05)))
-	(set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
+  (use-package org-superstar
+    :after org
+    :hook (org-mode . org-superstar-mode)
+    :custom
+    (org-directory "~/Repo/notes")
+    (org-superstar-remove-leading-stars t)
+    ;; (org-ellipsis "...")
+    (org-superstar-item-bullet-alist '((?+ . ?✦) (?- . ?–)))
+    (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-	(require 'org-indent)
-	(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-	(set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
-	(set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-	(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-	(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-	(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-	(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-	(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-	(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  ;; Increase the size of various headings
+  (set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
 
-	;; Get rid of the background on column views
-	(set-face-attribute 'org-column nil :background nil)
-	(set-face-attribute 'org-column-title nil :background nil))
+  (require 'org-indent)
+
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+  ;; Get rid of the background on column views
+  (set-face-attribute 'org-column nil :background nil)
+  (set-face-attribute 'org-column-title nil :background nil))
 
 (require 'org-tempo)
 
@@ -575,19 +595,18 @@ folder, otherwise delete a word"
 
 (defun jd/search-org-files ()
   (interactive)
-  (counsel-rg "" "~/Repo/org-book/" nil "Search Notes: "))
+  (counsel-rg "" "~/OrgBook/" nil "Search Notes: "))
 
 (defun jd/org-present-prepare-slide ()
   (org-overview)
   (org-show-entry)
-  (org-show-subtree)
   (org-show-children))
 
 (defun jd/org-present-hook ()
-  (setq-local face-remapping-alist '((default (:height 1.3) variable-pitch)
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
                                      (header-line (:height 4.5) variable-pitch)
-                                     (org-code (:height 1.3) org-code)
-                                     (org-verbatim (:height 1.3) org-verbatim)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
                                      (org-block (:height 1.25) org-block)
                                      (org-block-begin-line (:height 0.7) org-block)))
   (setq header-line-format " ")
