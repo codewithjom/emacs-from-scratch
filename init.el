@@ -145,12 +145,12 @@
 ;; (add-to-list 'default-frame-alist '(alpha . (80 . 80)))
 
 ;; NOTE: Remove the comments below to set emacs to fullscreen
-(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; NOTE: Add comment (;;) below to use the fullscreen above
-;; (add-to-list 'default-frame-alist '(width  . 90))
-;; (add-to-list 'default-frame-alist '(height . 44))
+(add-to-list 'default-frame-alist '(width  . 90))
+(add-to-list 'default-frame-alist '(height . 44))
 
 
 ;; Enable line numbers and customize their format
@@ -796,7 +796,7 @@ folder, otherwise delete a word"
   ;; Searching
   (defun jd/search-org-files ()
     (interactive)
-    (counsel-rg "" "~/jot" nil "Search Notes: "))
+    (counsel-rg "" "~/til" nil "Search Notes: "))
 
   ;; Bindings
   (use-package evil-org
